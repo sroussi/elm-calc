@@ -1,8 +1,8 @@
-port module Main exposing(..)
+module Main exposing(..)
 import Browser
 import Html exposing (text, div, input, Html, select, option)
 import Dict exposing (update)
-import Html.Attributes exposing (style,class)
+import Html.Attributes exposing (class)
 import Html.Attributes exposing (value)
 import Html.Events exposing (onInput)
 
@@ -44,8 +44,6 @@ type Msg
     | Change2 String
     | ChangeOp String
 
-port saveHistory: List Model -> Cmd msg
-
 calc: String->Int->Int->Float
 calc o = 
     case o of
@@ -57,13 +55,13 @@ calc o =
 
 
 add : Int -> Int -> Float
-add a b = a+b|>toFloat
+add a b = a + b |> toFloat
 sub : Int -> Int -> Float
-sub a b = a-b|>toFloat
+sub a b = a - b |> toFloat
 mult : Int -> Int -> Float
-mult a b = a*b|>toFloat
+mult a b = a * b |> toFloat
 divide : Int -> Int -> Float
-divide a b = (toFloat a)/(toFloat b)
+divide a b = (toFloat a) / (toFloat b)
 zero : Int -> Int -> Float
 zero _ _ = 0
     
@@ -117,12 +115,7 @@ updateHist hist newcurr =
 
 update: Msg -> FullModel -> FullModel
 update msg model = 
-    updateCurr msg model.curr |> updateModel model |> save
-
-save: FullModel->FullModel
-save model =
-    saveHistory(model.hist)|> \_->model
-    
+    updateCurr msg model.curr |> updateModel model    
 
 -- VIEW
 
@@ -145,8 +138,8 @@ view model =
     [input[value <| String.fromInt model.curr.content1, onInput Change1][]
     ,select[onInput ChangeOp, value model.curr.op](["+","-","*",":"] |> List.map stooption)
     ,input[value <| String.fromInt  model.curr.content2, onInput Change2][]
-    ,div [][text "Result: ",resview model.curr]
+    ,div [class "result"][text "Result: ",resview model.curr]
     ]
     ,div []
-    (div[][text "History"] :: (model.hist |> List.map histItem))
+    (div[class "hist-title"][text "History"] :: (model.hist |> List.map histItem))
     ]

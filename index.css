@@ -1,3 +1,7 @@
 div, input {
     margin: 10px;
 }
+
+div.result {
+    font-weight: bold;
+}
