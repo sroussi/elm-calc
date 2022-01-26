@@ -11,9 +11,11 @@
     <script>
         const root = document.getElementById("app");
 
+        storedHistory = JSON.parse(localStorage.getItem('history'))
         const app = Elm.Main.init({
-            node: root
+            node: root,
+            flags: storedHistory
         });
-        
+        app.ports.saveHistory.subscribe(value => localStorage.setItem('history', JSON.stringify(value)));
     </script>
 </body>

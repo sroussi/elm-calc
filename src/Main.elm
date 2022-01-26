@@ -1,16 +1,17 @@
-module Main exposing(..)
+port module Main exposing(..)
 import Browser
 import Html exposing (text, div, input, Html, select, option)
 import Dict exposing (update)
 import Html.Attributes exposing (class)
 import Html.Attributes exposing (value)
 import Html.Events exposing (onInput)
+import Json.Decode as JD exposing (Decoder, field, int,string,float)
 
 f: Int->Int
 f a = a+1
 
 -- MAIN
-main : Program () FullModel Msg
+main : Program JD.Value FullModel Msg
 main = Browser.element{init = init, update = update, view = view, subscriptions = subscriptions}
 
 -- MODEL
@@ -27,17 +28,39 @@ type alias FullModel =
     , hist : List Model
     }
  
-init: ()->(FullModel,Cmd Msg)
-init _ = 
+port saveHistory: List Model -> Cmd msg
+
+
+init: JD.Value -> (FullModel, Cmd Msg)
+init flags = 
+    let
+        history = case JD.decodeValue parseListModel flags of
+           Ok status -> status
+        --    Err err -> [{content1=1, content2=1,op=JD.errorToString err,output=2}]
+            Err _ -> []
+    in
+    
     ({ curr={content1 = 0,
             content2 = 0,
             op = "+",
             output = 0.0
             }
-       ,hist=[]
+       ,hist= history
      }
      , Cmd.none
     )
+
+parseModel: Decoder Model
+parseModel = 
+    JD.map4 Model
+        (field "content1" int)
+        (field "content2" int)
+        (field "op" string)
+        (field "output" float)
+parseListModel : Decoder (List Model)
+parseListModel =
+    JD.list parseModel
+    
 
 -- UPDATE
 type Msg
@@ -120,7 +143,7 @@ update msg model =
         newmodel = updateCurr msg model.curr |> updateModel model
     in
         (newmodel
-         , Cmd.none
+         , newmodel.hist |> saveHistory
         )
 
 -- SUBSCRIPTIONS

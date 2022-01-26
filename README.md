@@ -7,7 +7,7 @@
 * history V
 * no history if invalid char V
 * turn from sandbox to element V
-* history localstorage
+* history localstorage V
 * design
 * square and sqrt
 * float input
