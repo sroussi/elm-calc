@@ -6,6 +6,7 @@
 * non int char => keep value V
 * history V
 * no history if invalid char V
+* turn from sandbox to element V
 * history localstorage
 * design
 * square and sqrt
@@ -13,7 +14,7 @@
 * empty history placeholder
 * clear history
 * remove item from history
-* separate modules calc/hist
+* separate modules page/calc/hist
 * elm-spa?
 
 # Build

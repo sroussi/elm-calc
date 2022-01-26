@@ -11,7 +11,7 @@ f a = a+1
 
 -- MAIN
 main : Program () FullModel Msg
-main = Browser.sandbox{init = init, update = update, view = view}
+main = Browser.element{init = init, update = update, view = view, subscriptions = subscriptions}
 
 -- MODEL
 
@@ -27,16 +27,17 @@ type alias FullModel =
     , hist : List Model
     }
  
-
-init: FullModel
-init = 
-    { curr={content1 = 0,
+init: ()->(FullModel,Cmd Msg)
+init _ = 
+    ({ curr={content1 = 0,
             content2 = 0,
             op = "+",
             output = 0.0
-        }
-     ,hist=[]
-    }
+            }
+       ,hist=[]
+     }
+     , Cmd.none
+    )
 
 -- UPDATE
 type Msg
@@ -113,9 +114,19 @@ updateHist hist newcurr =
     else
         hist
 
-update: Msg -> FullModel -> FullModel
+update: Msg -> FullModel -> (FullModel, Cmd Msg)
 update msg model = 
-    updateCurr msg model.curr |> updateModel model    
+    let
+        newmodel = updateCurr msg model.curr |> updateModel model
+    in
+        (newmodel
+         , Cmd.none
+        )
+
+-- SUBSCRIPTIONS
+subscriptions : FullModel -> Sub Msg
+subscriptions _ =
+    Sub.none
 
 -- VIEW
 
